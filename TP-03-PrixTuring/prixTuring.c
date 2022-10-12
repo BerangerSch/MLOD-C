@@ -20,8 +20,7 @@
 /* This function scans a line of text (until \n) and returns a char* that contains all characters on the line (up to 255) excluding \n.
 It also ensures the \0 termination.
 **WARNING**: The result of this function has been allocated (calloc) by the function */
-char* scanLine()
-{
+char* scanLine(){
 	int maxLineSize = 255;
 	char c, *line = calloc(maxLineSize+1,sizeof(char));
 
@@ -48,10 +47,38 @@ int scanLineAsInt() {
 	return buf;
 }
 
+typedef struct{
+    int year;
+    char *name;
+    char *why;
+}Winner;
 
-int main(void)
-{
+Winner readWinner(){
+	Winner winner;
+	winner.year = scanLineAsInt();
+	winner.name = scanLine();
+	winner.why = scanLine();
+	return winner;
+}
 
+void printWinner(Winner winner){
+	printf("%i\n", winner.year);
+	printf("%s\n", winner.name);
+	printf("%s\n", winner.why);
+	free(winner.name);
+	free(winner.why);
+}
+
+Winner readWinners(){
+	int nbGagnants = scanLineAsInt();
+	Winner winners[nbGagnants];
+	for(int i=0; i<nbGagnants; i++){
+		winners[i] = readWinner();
+	}
+	return *winners;
+}
+
+int main(void){	
 	int nbGagnants = scanLineAsInt();
 	printf("nbGagnants = %i\n",nbGagnants);
 
