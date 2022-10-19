@@ -78,6 +78,10 @@ Winner readWinners(){
 	return *winners;
 }
 
+void printWinners(Winner winners){
+	int nbGagnants = sizeof(winners);
+}
+
 int main(void){	
 	int nbGagnants = scanLineAsInt();
 	printf("nbGagnants = %i\n",nbGagnants);
