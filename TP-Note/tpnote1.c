@@ -16,6 +16,7 @@ void repeat(int *tableau1, int *tableau2, int *tableauFinal){
         for (long unsigned int k = 0; k < sizeof(tableau1) ; k++){
             for (int l = 0; l < tableau1[k]; l++){
                 tableauFinal[j] = tableau2[k];
+                j++;
             }
         }
     }
