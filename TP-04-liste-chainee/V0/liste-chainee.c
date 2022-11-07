@@ -15,14 +15,14 @@ Liste creer(Element v){
 	Cellule *cellule = malloc(sizeof(*cellule));
 
 	if(estVide(*liste)){
-		return EXIT_FAILURE;
+		exit(EXIT_FAILURE);
 	}
 
 	cellule->val = v;
 	cellule->suiv = NULL;
-	liste = cellule;
+	*liste = cellule;
 
-	return liste;
+	return *liste;
 }
 
 // ajoute l'élément v en tete de la liste l
@@ -51,20 +51,48 @@ void afficheElement(Element e) {
 // Attention la liste peut être vide !
 // version itérative
 void afficheListe_i(Liste l) {
-	TODO;
+	if(estVide(l)){
+		exit(EXIT_FAILURE);
+	}
+
+	struct cellule_s *suivant;
+	Cellule cellule = *l;
+
+	while(suivant != NULL){
+		afficheElement(cellule.val);
+		suivant = cellule.suiv;
+	}
 }
 
 // version recursive
 void afficheListe_r(Liste l) {
-	TODO;
+	if(estVide(l)){
+		exit(EXIT_FAILURE);
+	}
+	Cellule cellule = *l;
+	afficheElement(cellule.val);
+	if(cellule.suiv!=NULL){
+		afficheListe_r(cellule.suiv);
+	}
 }
 
-void detruireElement(Element e) {}
+void detruireElement(Element e) {
+	free(&e);
+}
 
 // Détruit tous les éléments de la liste l
 // version itérative
 void detruire_i(Liste l) {
-	TODO;
+	if(estVide(l)){
+		exit(EXIT_FAILURE);
+	}
+	Cellule cellule = *l;
+	struct cellule_s *suivant = cellule.suiv;
+
+	while(suivant != NULL){
+		suivant = cellule.suiv;
+		detruireElement(&cellule);
+	}
 }
 
 // version récursive
