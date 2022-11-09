@@ -26,7 +26,7 @@ typedef struct cellule_s Cellule;
 typedef Cellule *Liste;
 
 // ============
-// External Functions
+// Fonctions externes
 // ============
 
 extern void afficheElement(Element e);
@@ -34,7 +34,7 @@ extern void detruireElement(Element e);
 extern bool equalsElement(Element e1, Element e2);
 
 // ============
-// Exported Functions
+// Fonctions de linkedListOfMusic.c
 // ============
 
 // retourne vrai si l est vide et faux sinon
