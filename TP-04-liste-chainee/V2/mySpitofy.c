@@ -3,8 +3,7 @@
 #include <string.h>
 #include "linkedListOfMusic.h"
 
-void afficheElement(Element e)
-{
+void afficheElement(Element e){
     Musique *musique = (Musique *)e;
     printf("%s,", musique->name);
     printf("%s,", musique->artist);
@@ -16,8 +15,7 @@ void afficheElement(Element e)
     printf("\n");
 }
 
-void detruireElement(Element e)
-{
+void detruireElement(Element e){
     Musique *mus = (Musique *)e;
     free(mus->name);
     free(mus->genre);
@@ -31,8 +29,7 @@ void detruireElement(Element e)
 }
 
 // compare deux elements (0 = FALSE/1 = TRUE)
-bool equalsElement(Element e1, Element e2)
-{
+bool equalsElement(Element e1, Element e2){
     Musique *mus1 = (Musique *)e1;
     Musique *mus2 = (Musique *)e2;
 
@@ -61,8 +58,7 @@ bool equalsElement(Element e1, Element e2)
 }
 
 // Fonction pour lire le fichier csv en entrée
-Liste readFile(FILE *csv)
-{
+Liste lireCSV(FILE *csv){
     Liste l;
     int tailleLigne = 256;
     l = NULL;
@@ -111,9 +107,37 @@ Liste readFile(FILE *csv)
 }
 
 Liste triParAnnee(Liste l){
-    Liste p = l;
-    Liste triee;
-    
+    if(estVide(l) || estVide(l->suiv)){
+		return l;
+	}
+
+    Cellule *actu, *prec, *ancien, *precAncien; 
+    Musique *musiqueActu = actu->val; 
+    Musique *musiquePrec = prec->val; 
+    Musique *musiqueAncien = ancien->val; 
+    Musique *musiquePrecAncien = precAncien->val;
+
+	actu = prec = ancien = precAncien = l;
+
+	while(!estVide(actu)){
+		if(strcmp(musiqueActu->year, musiqueAncien->year) <= 0){
+			precAncien = prec;
+			ancien = actu;
+		}
+		prec = actu;
+		actu = actu->suiv;
+	}
+
+	Liste temp;
+	if(ancien != l){
+		precAncien->suiv = l;
+		temp = l->suiv;
+		l->suiv = ancien->suiv;
+		ancien->suiv = temp;
+	}
+	ancien->suiv = trierParAnnee(ancien->suiv);
+
+	return ancien;
 }
 
 int main(void)
@@ -122,7 +146,7 @@ int main(void)
     fichierCsv = fopen("music.csv", "r");
     Liste bibliotheque;
 
-    bibliotheque = readFile(fichierCsv);
+    bibliotheque = lireCSV(fichierCsv);
     afficheListe_i(bibliotheque);
     detruire_i(bibliotheque);
 
