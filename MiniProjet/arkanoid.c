@@ -76,7 +76,7 @@ static void UpdateGame(void);               // Update game (one frame)
 static void DrawGame(void);                 // Draw game (one frame)
 static void UnloadGame(void);               // Unload game
 static void UpdateDrawFrame(void);          // Update and Draw (one frame)
-static void UpdateWhenHit(int i, int j);    // Update game parameters when brick is destroyed
+static void UpdateWhenDestroyed(int i, int j);    // Update game parameters when brick is destroyed
 
 //------------------------------------------------------------------------------------
 // Program main entry point
@@ -146,6 +146,12 @@ void InitGame(void)
                 brick[i][j].type = 1;
             }else if (estSpecial < 10){
                 brick[i][j].type = 2;
+            }else if (estSpecial < 15){
+                if(brick[i-1][j].type != 3 && brick[i][j-1].type != 3) brick[i][j].type = 3;
+            }else if (estSpecial < 17){
+                brick[i][j].type = 4;
+            }else if (estSpecial < 20){
+                brick[i][j].type = 5;
             }else{
                 brick[i][j].type = 0;
             }
@@ -228,7 +234,7 @@ void UpdateGame(void)
                         {
                             brick[i][j].active = false;
                             ball.speed.y *= -1;
-                            UpdateWhenHit(i, j);
+                            UpdateWhenDestroyed(i, j);
                         }
                         // Hit above
                         else if (((ball.position.y + ball.radius) >= (brick[i][j].position.y - brickSize.y/2)) &&
@@ -237,7 +243,7 @@ void UpdateGame(void)
                         {
                             brick[i][j].active = false;
                             ball.speed.y *= -1;
-                            UpdateWhenHit(i, j);
+                            UpdateWhenDestroyed(i, j);
                         }
                         // Hit left
                         else if (((ball.position.x + ball.radius) >= (brick[i][j].position.x - brickSize.x/2)) &&
@@ -246,7 +252,7 @@ void UpdateGame(void)
                         {
                             brick[i][j].active = false;
                             ball.speed.x *= -1;
-                            UpdateWhenHit(i, j);
+                            UpdateWhenDestroyed(i, j);
                         }
                         // Hit right
                         else if (((ball.position.x - ball.radius) <= (brick[i][j].position.x + brickSize.x/2)) &&
@@ -255,7 +261,7 @@ void UpdateGame(void)
                         {
                             brick[i][j].active = false;
                             ball.speed.x *= -1;
-                            UpdateWhenHit(i, j);
+                            UpdateWhenDestroyed(i, j);
                         }
                     }
                 }
@@ -276,6 +282,7 @@ void UpdateGame(void)
                 }
             }
         }
+
     }
     else
     {
@@ -317,14 +324,24 @@ void DrawGame(void)
                         if ((i + j) % 2 == 0) couleur = GRAY;
                         else couleur = DARKGRAY;
 
-                        if (brick[i][j].type == 1) couleur = YELLOW;
+                        if (brick[i][j].type == 1) couleur = ORANGE;
                         if (brick[i][j].type == 2) couleur = BLUE;
+                        if (brick[i][j].type == 3) couleur = PURPLE;
+                        if (brick[i][j].type == 4) couleur = RED;
+                        if (brick[i][j].type == 5) couleur = GREEN;
                         DrawRectangle(brick[i][j].position.x - brickSize.x/2, brick[i][j].position.y - brickSize.y/2, brickSize.x, brickSize.y, couleur);
                     }
                 }
             }
 
-            if (pause) DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, GRAY);
+            if (pause){
+                DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, BLACK);
+                DrawText("ORANGE : Increase ball size", screenWidth*3/5, screenHeight*3/5, 20, ORANGE);
+                DrawText("BLUE: Increase ball speed", screenWidth*3/5, screenHeight*3/5+30, 20, BLUE);
+                DrawText("PURPLE: Destroy adjacents\n           bricks", screenWidth*3/5, screenHeight*3/5+60, 20, PURPLE);
+                DrawText("RED: Decrease player size", screenWidth*3/5, screenHeight*3/5+120, 20, RED);
+                DrawText("GREEN: Increase player size", screenWidth*3/5, screenHeight*3/5+150, 20, GREEN);
+            }
         }
         else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
 
@@ -344,11 +361,43 @@ void UpdateDrawFrame(void)
     DrawGame();
 }
 
-void UpdateWhenHit(int i, int j){
-    if(brick[i][j].type == 1){
+void UpdateWhenDestroyed(int i, int j){
+    switch (brick[i][j].type){
+    case 1: 
+        // La balle grandit lorsqu'une brique jaune est détruite
         ball.radius *= 1.5;
-    }else if(brick[i][j].type==2){
+        break;
+
+    case 2: 
+        // La vitesse de la balle augmente lorsqu'une brique bleue est détruite
         ball.speed.x *= 1.5;
         ball.speed.y *= 1.5;
+        break;
+
+    case 3:
+        // Les briques adjacentes à une brique violette sont détruites lors de sa destruction
+        if(j < BRICKS_PER_LINE-1){
+            brick[i][j+1].active = false;
+            UpdateWhenDestroyed(i, j+1);
+        }
+        if(j > 0){
+            brick[i][j-1].active = false;
+            UpdateWhenDestroyed(i, j-1);
+        }
+        brick[i+1][j].active = false;
+        UpdateWhenDestroyed(i+1, j);
+        brick[i-1][j].active = false;
+        UpdateWhenDestroyed(i-1, j);
+        break;
+
+    case 4:
+        // La taille du player diminue lorsqu'une brique rouge est détruite
+        player.size.x *= 0.80;
+        break;
+
+    case 5:
+        // La taille du player augmente lorsqu'une brique verte est détruite
+        player.size.x *= 1.20;
+        break;
     }
 }
