@@ -28,8 +28,8 @@
 // Some Defines
 //----------------------------------------------------------------------------------
 #define PLAYER_MAX_LIFE         5
-#define LINES_OF_BRICKS         5
-#define BRICKS_PER_LINE        20
+#define LINES_OF_BRICKS         7
+#define BRICKS_PER_LINE        25
 
 //----------------------------------------------------------------------------------
 // Types and Structures Definition
@@ -50,18 +50,18 @@ typedef struct Ball {
 typedef struct Brick {
     Vector2 position;
     bool active;
-    int type;
+    int type; // Ajout du type de brick (0 est une case normale)
 } Brick;
 
 
 //------------------------------------------------------------------------------------
 // Global Variables Declaration
 //------------------------------------------------------------------------------------
-static const int screenWidth = 800;
-static const int screenHeight = 450;
+static const int screenWidth = 1000;
+static const int screenHeight = 650;
 
 static bool gameOver = false;
-static bool pause = false;
+static bool pause = true;
 
 static Player player = { 0 };
 static Ball ball = { 0 };
@@ -334,13 +334,14 @@ void DrawGame(void)
                 }
             }
 
-            if (pause){
+            if (pause){ // On affiche le jeu en pause et un menu indiquant les effets de chaque couleur de brique
                 DrawText("GAME PAUSED", screenWidth/2 - MeasureText("GAME PAUSED", 40)/2, screenHeight/2 - 40, 40, BLACK);
                 DrawText("ORANGE : Increase ball size", screenWidth*3/5, screenHeight*3/5, 20, ORANGE);
                 DrawText("BLUE: Increase ball speed", screenWidth*3/5, screenHeight*3/5+30, 20, BLUE);
                 DrawText("PURPLE: Destroy adjacents\n           bricks", screenWidth*3/5, screenHeight*3/5+60, 20, PURPLE);
                 DrawText("RED: Decrease player size", screenWidth*3/5, screenHeight*3/5+120, 20, RED);
                 DrawText("GREEN: Increase player size", screenWidth*3/5, screenHeight*3/5+150, 20, GREEN);
+                DrawText("Press [p] to play", screenWidth*3/5, screenHeight*3/5+180, 20, GRAY);
             }
         }
         else DrawText("PRESS [ENTER] TO PLAY AGAIN", GetScreenWidth()/2 - MeasureText("PRESS [ENTER] TO PLAY AGAIN", 20)/2, GetScreenHeight()/2 - 50, 20, GRAY);
@@ -376,11 +377,11 @@ void UpdateWhenDestroyed(int i, int j){
 
     case 3:
         // Les briques adjacentes à une brique violette sont détruites lors de sa destruction
-        if(j < BRICKS_PER_LINE-1){
+        if(j < BRICKS_PER_LINE-1){ // Si ce n'est pas la dernière case de la ligne 
             brick[i][j+1].active = false;
             UpdateWhenDestroyed(i, j+1);
         }
-        if(j > 0){
+        if(j > 0){ // Si ce n'est pas la première case de la ligne
             brick[i][j-1].active = false;
             UpdateWhenDestroyed(i, j-1);
         }
