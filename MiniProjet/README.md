@@ -9,3 +9,5 @@ Ajout de différentes briques bonus de couleurs différentes:
 La taille et la vitesse de la balle sont réinitialisées à chaque vie
 
 compil: gcc -o arkanoid arkanoid.c -Wall -std=c11 /home/bot/Raylib.git/src/libraylib.a -lm -ldl -lrt -lpthread -lGL -lX11
+
+video demo: https://youtu.be/IzUYFNMTjzw
